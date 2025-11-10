@@ -20,6 +20,7 @@ export const AuthProvider = ({ children }) => {
       // Decode token or fetch user info
       // For simplicity, assume user info is in localStorage or decode JWT
       const userInfo = JSON.parse(localStorage.getItem('user') || '{}');
+      
       console.log('AuthContext - Loaded user info:', userInfo);
       if (userInfo && Object.keys(userInfo).length > 0) {
         setUser(userInfo);

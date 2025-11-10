@@ -40,6 +40,12 @@ const SupervisorAuth = () => {
         localStorage.setItem('token', data.token);
         localStorage.setItem('userType', 'supervisor');
         localStorage.setItem('userName', data.supervisor.name);
+        localStorage.setItem('user', JSON.stringify({
+          id: data.supervisor.id,
+          name: data.supervisor.name,
+          email: data.supervisor.email,
+          type: 'supervisor'
+        }));
         navigate('/dashboard');
       } else {
         setError(data.message || 'Login failed');

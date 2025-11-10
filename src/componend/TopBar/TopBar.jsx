@@ -197,7 +197,20 @@ console.log(teamRequests)
 
         {/* Right Section - Actions */}
         <div className="flex items-center space-x-4">
-
+<div>
+  <Link to={'/profile'} className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200">
+    Profile
+  </Link>
+</div>
+    {!isLoggedIn && (
+      <div>
+        <Link to={'/security'}>
+          <button className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200">
+            Admin
+          </button>
+        </Link>
+      </div>
+    )}
           {/* Quick Actions */}
           <div className="hidden md:flex items-center space-x-2">
             <button className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200">
@@ -320,7 +333,7 @@ console.log(teamRequests)
                     <p className="text-xs text-gray-500">{userType === 'student' ? 'Student' : 'Supervisor'}</p>
                   </div>
                   <div className="py-2">
-                    <button className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</button>
+                    <Link to="/profile" className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</Link>
                     <button className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</button>
                     <div className="border-t border-gray-200 my-1"></div>
                     <button

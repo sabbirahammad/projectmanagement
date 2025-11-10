@@ -54,12 +54,20 @@ const StudentAuth = () => {
       });
 
       const data = await response.json();
-      console.log(data);
+      console.log('Login Response:', data);
+      console.log('Student Data:', data.student);
 
       if (response.ok) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('userType', 'student');
         localStorage.setItem('userName', data.student.first_name);
+        localStorage.setItem('user', JSON.stringify({
+          id: data.student.id,
+          name: data.student.first_name,
+          email: data.student.email,
+          type: 'student'
+        }));
+        console.log('Stored user data:', JSON.parse(localStorage.getItem('user')));
         navigate('/dashboard');
       } else {
         // Show notification for API errors

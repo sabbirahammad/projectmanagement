@@ -21,15 +21,15 @@ const SiteBar = () => {
     }, []);
   const menuItems = [
     { name: 'Dashboard', path: '/dashboard', icon: '🏠' },
-    { name: 'Admin', path: '/admin', icon: '📁' },
     { name: 'Projects', path: '/projects', icon: '📋' },
     { name: 'Tasks', path: '/tasks', icon: '✅' },
     { name: 'Student Tasks', path: '/studenttask', icon: '✅' },
     { name: 'Student', path: '/student/list', icon: '👨‍🎓' },
-     { name: 'Supervisor', path: '/supervisorList', icon: '👨‍🎓' },
+     { name: 'Supervisor', path:'/supervisorList', icon: '👨‍🎓' },
     { name: 'Team', path: '/myteam', icon: '👥' },
     { name: 'Reports', path: '/reports', icon: '📊' },
     { name: 'Settings', path: '/settings', icon: '⚙️' },
+    { name: 'Profile', path: '/profile', icon: '👤' },
   ];
 
   return (

@@ -13,6 +13,7 @@ import Team from './componend/Team/Team'
 import MyTeam from './componend/Team/MyTeam'
 import Tasks from './componend/Tasks/Tasks'
 import StudentTask from './componend/StudentTaks/StudentTask'
+import Profile from './componend/Profile/Profile'
 
 function App() {
   return (
@@ -27,11 +28,13 @@ function App() {
         <Route path='/supervisor/register' element={<SupervisorRegister/>}/>
         <Route path='/security' element={<Sequrity/>}/>
         <Route path='/admin' element={<Admin/>}/>
+        {/* <Route path='/approval' element={<Approval/>}/> */}
         <Route path='/supervisorList' element={<Supervisor/>}/>
         <Route path='/team' element={<Team/>}/>
         <Route path='/myteam' element={<MyTeam/>}/>
         <Route path='/tasks' element={<Tasks/>}/>
         <Route path='/studenttask' element={<StudentTask/>}/>
+        <Route path='/profile' element={<Profile/>}/>
       </Routes>
       </BrowserRouter>
     </AuthProvider>

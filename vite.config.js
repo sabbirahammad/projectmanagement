@@ -10,7 +10,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/admin': {
-        target: 'http://localhost:8080', // Assuming backend is running on port 8080
+        target: 'http://192.168.0.106:8081', // Backend server address
         changeOrigin: true,
       },
     },

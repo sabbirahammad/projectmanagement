@@ -56,6 +56,11 @@ const Profile = () => {
           rollNumber: data.registration_number || data.rollNumber || '',
           profileImage: data.image || data.profile_image || ''
         });
+
+        // Store role in localStorage for sidebar
+        if (data.role) {
+          localStorage.setItem('userRole', data.role);
+        }
       } else {
         const errorData = await response.text();
         console.log('Profile fetch error:', errorData);

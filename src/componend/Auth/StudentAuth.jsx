@@ -68,7 +68,7 @@ const StudentAuth = () => {
           type: 'student'
         }));
         console.log('Stored user data:', JSON.parse(localStorage.getItem('user')));
-        navigate('/dashboard');
+        navigate('/');
       } else {
         // Show notification for API errors
         setNotification({
@@ -182,7 +182,7 @@ const StudentAuth = () => {
           {/* Back to home */}
           <div className="mt-4 text-center">
             <Link
-              to="/dashboard"
+              to="/"
               className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
             >
               ← Back to Home

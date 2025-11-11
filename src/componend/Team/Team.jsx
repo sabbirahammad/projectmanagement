@@ -31,7 +31,7 @@ const Team = () => {
     }
 
     try {
-      let url = 'http://192.168.0.106:8081/api/students';
+      let url = 'https://projectmanagement-production-e252.up.railway.app/api/students';
       const params = new URLSearchParams();
 
       if (department) params.append('department', department);
@@ -127,7 +127,7 @@ const Team = () => {
     const token = localStorage.getItem('token');
 
     try {
-      const response = await fetch('http://192.168.0.106:8081/api/team-requests', {
+      const response = await fetch('https://projectmanagement-production-e252.up.railway.app/api/team-requests', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

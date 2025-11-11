@@ -84,7 +84,7 @@ const StudentRegister = () => {
     console.log('Registration request body:', requestBody);
 
     try {
-      const response = await fetch('http://192.168.0.106:8081/api/auth/register/student', {
+      const response = await fetch('https://projectmanagement-production-e252.up.railway.app/api/auth/register/student', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

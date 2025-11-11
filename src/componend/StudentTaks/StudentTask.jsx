@@ -15,7 +15,7 @@ const StudentTask = () => {
   const [file, setFile] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
-  const API_BASE = 'http://192.168.0.106:8081/api';
+  const API_BASE = 'https://projectmanagement-production-e252.up.railway.app/api';
 
   useEffect(() => {
     const token = localStorage.getItem('token');

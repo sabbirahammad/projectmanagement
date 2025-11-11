@@ -31,7 +31,7 @@ const TopBar = () => {
 
     setLoading(true);
     try {
-      const response = await fetch('http://192.168.0.106:8081/api/team-requests/received', {
+      const response = await fetch('https://projectmanagement-production-e252.up.railway.app/api/team-requests/received', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -57,7 +57,7 @@ const TopBar = () => {
 
     setLoading(true);
     try {
-      const response = await fetch('http://192.168.0.106:8081/api/supervisor-requests/pending', {
+      const response = await fetch('https://projectmanagement-production-e252.up.railway.app/api/supervisor-requests/pending', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -81,7 +81,7 @@ const TopBar = () => {
   const handleAcceptRequest = async (requestId) => {
     const token = localStorage.getItem('token');
     try {
-      const response = await fetch(`http://192.168.0.106:8081/api/team-requests/${requestId}/accept`, {
+      const response = await fetch(`https://projectmanagement-production-e252.up.railway.app/api/team-requests/${requestId}/accept`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -101,7 +101,7 @@ const TopBar = () => {
   const handleRejectRequest = async (requestId) => {
     const token = localStorage.getItem('token');
     try {
-      const response = await fetch(`http://192.168.0.106:8081/api/team-requests/${requestId}/reject`, {
+      const response = await fetch(`https://projectmanagement-production-e252.up.railway.app/api/team-requests/${requestId}/reject`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -121,7 +121,7 @@ const TopBar = () => {
   const handleAcceptSupervisorRequest = async (requestId) => {
     const token = localStorage.getItem('token');
     try {
-      const response = await fetch(`http://192.168.0.106:8081/api/supervisor-requests/${requestId}/accept`, {
+      const response = await fetch(`https://projectmanagement-production-e252.up.railway.app/api/supervisor-requests/${requestId}/accept`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -141,7 +141,7 @@ const TopBar = () => {
   const handleRejectSupervisorRequest = async (requestId) => {
     const token = localStorage.getItem('token');
     try {
-      const response = await fetch(`http://192.168.0.106:8081/api/supervisor-requests/${requestId}/reject`, {
+      const response = await fetch(`https://projectmanagement-production-e252.up.railway.app/api/supervisor-requests/${requestId}/reject`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

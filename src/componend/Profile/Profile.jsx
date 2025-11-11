@@ -35,7 +35,7 @@ const Profile = () => {
     setLoading(true);
     console.log('Fetching profile for user ID:', user.id);
     try {
-      const response = await fetch(`http://192.168.0.106:8081/api/students/${user.id}`, {
+      const response = await fetch(`https://projectmanagement-production-e252.up.railway.app/api/students/${user.id}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',

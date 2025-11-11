@@ -23,7 +23,7 @@ const SupervisorAuth = () => {
     setError('');
 
     try {
-      const response = await fetch('http://192.168.0.106:8081/api/auth/login/supervisor', {
+      const response = await fetch('https://projectmanagement-production-e252.up.railway.app/api/auth/login/supervisor', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

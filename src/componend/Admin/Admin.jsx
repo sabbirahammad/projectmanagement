@@ -11,7 +11,7 @@ const Admin = () => {
   const fetchPendingUsers = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/admin/pending-users', {
+      const response = await fetch('https://projectmanagement-production-e252.up.railway.app/admin/pending-users', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -33,7 +33,7 @@ console.log(pendingUsers)
   const approveUser = async (userId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/admin/users/${userId}/approve`, {
+      const response = await fetch(`https://projectmanagement-production-e252.up.railway.app/admin/users/${userId}/approve`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

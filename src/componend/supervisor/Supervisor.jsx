@@ -34,8 +34,8 @@ const Supervisor = () => {
 
       try {
         const url = department
-          ? `http://192.168.0.106:8081/api/supervisors?department=${encodeURIComponent(department)}`
-          : 'http://192.168.0.106:8081/api/supervisors';
+          ? `https://projectmanagement-production-e252.up.railway.app/api/supervisors?department=${encodeURIComponent(department)}`
+          : 'https://projectmanagement-production-e252.up.railway.app/api/supervisors';
         console.log('Making API call to:', url);
         const response = await fetch(url, {
           headers: {
@@ -86,7 +86,7 @@ const Supervisor = () => {
     if (!token) return;
 
     try {
-      const response = await fetch('http://192.168.0.106:8081/api/my-team', {
+      const response = await fetch('https://projectmanagement-production-e252.up.railway.app/api/my-team', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -123,7 +123,7 @@ const Supervisor = () => {
     console.log('Submitting request with data:', requestForm);
     console.log('Project info length:', requestForm.project_info.length);
     try {
-      const response = await fetch('http://192.168.0.106:8081/api/supervisor-requests', {
+      const response = await fetch('https://projectmanagement-production-e252.up.railway.app/api/supervisor-requests', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -169,7 +169,7 @@ const Supervisor = () => {
 
     setRequestsLoading(true);
     try {
-      const response = await fetch('http://192.168.0.106:8081/api/supervisor-requests/my', {
+      const response = await fetch('https://projectmanagement-production-e252.up.railway.app/api/supervisor-requests/my', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',

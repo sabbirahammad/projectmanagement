@@ -27,7 +27,7 @@ const StudentList = () => {
     }
 
     try {
-      let url = 'http://192.168.0.106:8081/api/students';
+      let url = 'https://projectmanagement-production-e252.up.railway.app/api/students';
       const params = new URLSearchParams();
 
       if (department) params.append('department', department);

@@ -11,7 +11,7 @@ const MyTeam = () => {
   const [teamMessages, setTeamMessages] = useState({});
   const [loadingDetails, setLoadingDetails] = useState({});
 
-  const API_BASE = 'http://192.168.0.106:8081/api';
+  const API_BASE = 'https://projectmanagement-production-e252.up.railway.app/api';
 
   useEffect(() => {
     const fetchMyTeams = async () => {

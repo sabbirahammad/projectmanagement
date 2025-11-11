@@ -70,7 +70,7 @@ const StudentTask = () => {
       console.log('fetchMyTasks - Loading set to false');
     }
   };
-
+console.log(tasks)
   const fetchTeamMessages = async () => {
     const token = localStorage.getItem('token');
     console.log('fetchTeamMessages - Token exists:', !!token);

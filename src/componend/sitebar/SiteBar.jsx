@@ -111,7 +111,7 @@ const SiteBar = () => {
 
   const allMenuItems = [
     { name: 'Dashboard', path: '/', icon: '🏠' },
-    { name: 'Projects', path: '/projects', icon: '📋' },
+    { name: 'Projects', path: '/project', icon: '📋' },
     { name: 'Supervisor Tasks', path: '/tasks', icon: '✅', roles: ['supervisor'] },
     { name: 'Student Tasks', path: '/studenttask', icon: '✅', roles: ['student'] },
     { name: 'Student', path: '/student/list', icon: '👨‍🎓' },

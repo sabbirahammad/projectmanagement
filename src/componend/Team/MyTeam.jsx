@@ -173,6 +173,10 @@ const MyTeam = () => {
                       <label className="text-sm font-medium text-gray-500">Members</label>
                       <p className="text-gray-900">{team.members ? team.members.length : 0} members</p>
                     </div>
+                     <div>
+                      <label className="text-sm font-medium text-gray-500">Members</label>
+                      <p className="text-gray-900">{team.members ? team.members.length : 0} members</p>
+                    </div>
                     <div>
                       <label className="text-sm font-medium text-gray-500">Status</label>
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${

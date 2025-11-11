@@ -20,6 +20,9 @@ const Supervisor = () => {
   const [showRequestList, setShowRequestList] = useState(false);
   const [myRequests, setMyRequests] = useState([]);
   const [requestsLoading, setRequestsLoading] = useState(false);
+  const [showSubmissions, setShowSubmissions] = useState(false);
+  const [submissions, setSubmissions] = useState([]);
+  const [submissionsLoading, setSubmissionsLoading] = useState(false);
 
   useEffect(() => {
     const fetchSupervisors = async () => {
@@ -197,6 +200,62 @@ const Supervisor = () => {
     }
   };
 
+  const fetchSubmissions = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    setSubmissionsLoading(true);
+    try {
+      const response = await fetch('https://projectmanagement-production-e252.up.railway.app/api/submissions?status=1', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setSubmissions(data.submissions || data);
+      }
+    } catch (err) {
+      console.log('Error fetching submissions:', err);
+    } finally {
+      setSubmissionsLoading(false);
+    }
+  };
+
+  const handleAcceptSubmission = async (submissionId) => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      const response = await fetch(`https://projectmanagement-production-e252.up.railway.app/api/submissions/${submissionId}/review`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: 2 }),
+      });
+
+      if (response.ok) {
+        setSubmissions(submissions.filter(s => s.id !== submissionId));
+        alert('Submission accepted');
+      } else {
+        alert('Failed to accept submission');
+      }
+    } catch (err) {
+      console.log('Error accepting submission:', err);
+    }
+  };
+
+  const handleShowSubmissions = () => {
+    setShowSubmissions(!showSubmissions);
+    if (!showSubmissions) {
+      fetchSubmissions();
+    }
+  };
+
 
   const filteredSupervisors = supervisors.filter(supervisor =>
     supervisor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -244,12 +303,18 @@ const Supervisor = () => {
                 <h1 className="text-4xl font-bold text-gray-800 mb-4">Supervisor Directory</h1>
                 <p className="text-gray-600">Manage and view all supervisors</p>
               </div>
-              <div className="relative">
+              <div className="relative flex space-x-4">
                 <button
                   onClick={handleShowRequestList}
                   className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl hover:from-purple-600 hover:to-pink-600 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                 >
                   📋 Request List
+                </button>
+                <button
+                  onClick={handleShowSubmissions}
+                  className="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl hover:from-blue-600 hover:to-indigo-600 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                >
+                  📝 Pending Submissions
                 </button>
 
                 {/* Request List Dropdown */}
@@ -390,6 +455,47 @@ const Supervisor = () => {
                 </div>
               ))}
             </div>
+
+            {showSubmissions && (
+              <div className="mt-8">
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">Pending Submissions</h2>
+                {submissionsLoading ? (
+                  <div className="text-center py-4">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                    <p className="text-gray-500 mt-2">Loading submissions...</p>
+                  </div>
+                ) : submissions.length === 0 ? (
+                  <div className="text-center py-8">
+                    <div className="text-4xl mb-2">📄</div>
+                    <p className="text-gray-500">No pending submissions</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {submissions.map((submission) => (
+                      <div key={submission.id} className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 border border-gray-100">
+                        <div className="flex justify-between items-start mb-4">
+                          <h3 className="text-lg font-semibold text-gray-800">{submission.task?.title || 'Task'}</h3>
+                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            Pending
+                          </span>
+                        </div>
+                        <p className="text-gray-600 mb-4 line-clamp-3">{submission.content}</p>
+                        <div className="flex justify-between items-center text-sm text-gray-500 mb-4">
+                          <span>Submitted by: {submission.student?.name || 'Student'}</span>
+                          <span>{new Date(submission.submitted_at).toLocaleDateString()}</span>
+                        </div>
+                        <button
+                          onClick={() => handleAcceptSubmission(submission.id)}
+                          className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 font-medium"
+                        >
+                          Accept Submission
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             {filteredSupervisors.length === 0 && (
               <div className="text-center py-12">

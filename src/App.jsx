@@ -14,6 +14,7 @@ import MyTeam from './componend/Team/MyTeam'
 import Tasks from './componend/Tasks/Tasks'
 import StudentTask from './componend/StudentTaks/StudentTask'
 import Profile from './componend/Profile/Profile'
+import Project from './componend/Project/Project'
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
         <Route path='/tasks' element={<Tasks/>}/>
         <Route path='/studenttask' element={<StudentTask/>}/>
         <Route path='/profile' element={<Profile/>}/>
+        <Route path='/project' element={<Project/>}/>
       </Routes>
       </BrowserRouter>
     </AuthProvider>

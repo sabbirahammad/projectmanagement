@@ -803,7 +803,7 @@ const Tasks = () => {
       console.error('Error fetching tasks:', err);
     }
   };
-
+console.log(tasks)
   const fetchTeamMessages = async (teamId) => {
     const token = localStorage.getItem('token');
     console.log('Fetching messages with token:', token ? 'Token exists' : 'No token');
@@ -1033,7 +1033,7 @@ const Tasks = () => {
         },
         body: JSON.stringify({
           file_url: fileUrl,
-       
+
         })
       });
 
@@ -1061,6 +1061,64 @@ const Tasks = () => {
       alert(`Error submitting task: ${err.message}`);
     } finally {
       setSubmittingSubmit(false);
+    }
+  };
+
+  const handleUpdateTaskStatus = async (taskId, status) => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await fetch(`${API_BASE}/tasks/${taskId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status })
+      });
+      if (response.ok) {
+        console.log('Task status updated to', status);
+      } else {
+        console.error('Failed to update task status');
+      }
+    } catch (err) {
+      console.error('Error updating task status:', err);
+    }
+  };
+
+  const handleReviewSubmission = async (taskId, teamId) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Authentication token not found. Please log in again.');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE}/submissions/${taskId}/review`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          action: 'approve',
+          feedback: 'Excellent work on the e-commerce project! Well structured.'
+        })
+      });
+
+      if (response.ok) {
+        alert('Submission approved successfully!');
+        // Update task status to approved
+        await handleUpdateTaskStatus(taskId, 'approved');
+        // Refresh tasks for the current team
+        fetchTeamTasks(teamId);
+      } else {
+        const errorText = await response.text();
+        console.error('Failed to review submission:', response.status, response.statusText, errorText);
+        alert(`Failed to approve submission: ${response.status} ${response.statusText}`);
+      }
+    } catch (err) {
+      console.error('Error reviewing submission:', err);
+      alert(`Error approving submission: ${err.message}`);
     }
   };
 
@@ -1271,7 +1329,7 @@ const Tasks = () => {
                                       <div className="flex items-center mb-2">
                                         <h5 className="font-medium text-gray-800 text-sm mr-2">{task.title}</h5>
                                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                          task.status === 'completed' ? 'bg-green-100 text-green-800' :
+                                          task.status === 'completed' || task.status === 'approved' ? 'bg-green-100 text-green-800' :
                                           task.status === 'in_progress' ? 'bg-yellow-100 text-yellow-800' :
                                           'bg-blue-100 text-blue-800'
                                         }`}>
@@ -1287,23 +1345,38 @@ const Tasks = () => {
                                           <h6 className="text-xs font-semibold text-gray-700 mb-2">📤 Submissions ({task.submissions.length})</h6>
                                           <div className="space-y-2">
                                             {task.submissions.map((submission, index) => (
-                                              <div key={index} className="bg-white rounded p-2 border border-gray-200">
+                                              <div key={submission.submission_id || index} className="bg-white rounded p-2 border border-gray-200">
                                                 <div className="flex justify-between items-start">
                                                   <div className="flex-1">
                                                     <p className="text-xs text-gray-800 font-medium">{submission.student_name}</p>
                                                     <p className="text-xs text-gray-600">Type: {submission.submission_type}</p>
                                                     <p className="text-xs text-gray-500">Submitted: {new Date(submission.submitted_at).toLocaleString()}</p>
                                                   </div>
-                                                  {submission.file_url && (
-                                                    <a
-                                                      href={submission.file_url}
-                                                      target="_blank"
-                                                      rel="noopener noreferrer"
-                                                      className="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600 transition-colors"
-                                                    >
-                                                      View File
-                                                    </a>
-                                                  )}
+                                                  <div className="flex space-x-2">
+                                                    {submission.file_url && (
+                                                      <a
+                                                        href={submission.file_url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600 transition-colors"
+                                                      >
+                                                        View File
+                                                      </a>
+                                                    )}
+                                                    {submission.status !== 'approved' && (
+                                                      <button
+                                                        onClick={() => handleReviewSubmission(task.id, team.id)}
+                                                        className="px-2 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600 transition-colors"
+                                                      >
+                                                        Approve
+                                                      </button>
+                                                    )}
+                                                    {submission.status === 'approved' && (
+                                                      <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-medium">
+                                                        Approved
+                                                      </span>
+                                                    )}
+                                                  </div>
                                                 </div>
                                               </div>
                                             ))}

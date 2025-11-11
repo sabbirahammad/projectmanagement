@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 
 const Profile = () => {
   const { user } = useAuth();
+  console.log(user)
   const [profileData, setProfileData] = useState({
     name: '',
     email: '',
@@ -17,10 +18,15 @@ const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [submissions, setSubmissions] = useState([]);
+  const [submissionsLoading, setSubmissionsLoading] = useState(false);
 
   useEffect(() => {
     console.log('Profile component - user from context:', user);
     fetchProfile();
+    if (user?.type === 'student') {
+      fetchSubmissions();
+    }
   }, [user]);
 
   const fetchProfile = async () => {
@@ -33,9 +39,14 @@ const Profile = () => {
     }
 
     setLoading(true);
-    console.log('Fetching profile for user ID:', user.id);
+    console.log('Fetching profile for user ID:', user.id, 'Role:', user.role);
     try {
-      const response = await fetch(`https://projectmanagement-production-e252.up.railway.app/api/students/${user.id}`, {
+      // Determine API endpoint based on user type
+      const apiEndpoint = user.type === 'supervisor'
+        ? `https://projectmanagement-production-e252.up.railway.app/api/supervisors/${user.id}`
+        : `https://projectmanagement-production-e252.up.railway.app/api/students/${user.id}`;
+
+      const response = await fetch(apiEndpoint, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -47,15 +58,29 @@ const Profile = () => {
         const data = await response.json();
         console.log('Profile data received:', data);
         console.log('Available fields in response:', Object.keys(data));
-        setProfileData({
-          name: data.first_name || data.name || '',
-          email: data.email || '',
-          phone: data.phone || '',
-          department: data.department || '',
-          semester: data.session || data.semester || '',
-          rollNumber: data.registration_number || data.rollNumber || '',
-          profileImage: data.image || data.profile_image || ''
-        });
+
+        // Handle different field names for supervisors vs students
+        if (user.type === 'supervisor') {
+          setProfileData({
+            name: data.first_name || data.name || '',
+            email: data.email || '',
+            phone: data.phone || '',
+            department: data.department || '',
+            semester: '', // Supervisors might not have semester
+            rollNumber: data.employee_id || data.registration_number || '',
+            profileImage: data.image || data.profile_image || ''
+          });
+        } else {
+          setProfileData({
+            name: data.first_name || data.name || '',
+            email: data.email || '',
+            phone: data.phone || '',
+            department: data.department || '',
+            semester: data.session || data.semester || '',
+            rollNumber: data.registration_number || data.rollNumber || '',
+            profileImage: data.image || data.profile_image || ''
+          });
+        }
 
         // Store role in localStorage for sidebar
         if (data.role) {
@@ -75,31 +100,82 @@ const Profile = () => {
     }
   };
 
+  const fetchSubmissions = async () => {
+    const token = localStorage.getItem('token');
+
+    if (!token || !user || !user.id) {
+      console.log('Missing auth data for submissions:', { token: !!token, user, userId: user?.id });
+      return;
+    }
+
+    setSubmissionsLoading(true);
+    console.log('Fetching submissions for user ID:', user.id);
+    try {
+      const response = await fetch(`https://projectmanagement-production-e252.up.railway.app/api/students/${user.id}/submissions`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      console.log('Submissions fetch response status:', response.status);
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Submissions data received:', data);
+        setSubmissions(data.submissions || []);
+      } else {
+        const errorData = await response.text();
+        console.log('Submissions fetch error:', errorData);
+      }
+    } catch (err) {
+      console.log('Error fetching submissions:', err);
+    } finally {
+      setSubmissionsLoading(false);
+    }
+  };
+
   const handleUpdate = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
 
     if (!token || !user || !user.id) {
-    
+
       console.log('Missing auth data for update:', { token: !!token, user, userId: user?.id });
       return;
     }
 
     setLoading(true);
-    console.log('Updating profile for user ID:', user.id);
+    console.log('Updating profile for user ID:', user.id, 'Role:', user.role);
     try {
-      const updateData = {
-        first_name: profileData.name,
-        email: profileData.email,
-        phone: profileData.phone,
-        department: profileData.department,
-        session: profileData.semester,
-        registration_number: profileData.rollNumber,
-        image: profileData.profileImage
-      };
+      // Determine API endpoint and data structure based on user type
+      const apiEndpoint = user.type === 'supervisor'
+        ? `https://projectmanagement-production-e252.up.railway.app/api/supervisors/${user.id}`
+        : `https://projectmanagement-production-e252.up.railway.app/api/students/${user.id}`;
+
+      let updateData;
+      if (user.type === 'supervisor') {
+        updateData = {
+          first_name: profileData.name,
+          email: profileData.email,
+          phone: profileData.phone,
+          department: profileData.department,
+          employee_id: profileData.rollNumber,
+          image: profileData.profileImage
+        };
+      } else {
+        updateData = {
+          first_name: profileData.name,
+          email: profileData.email,
+          phone: profileData.phone,
+          department: profileData.department,
+          session: profileData.semester,
+          registration_number: profileData.rollNumber,
+          image: profileData.profileImage
+        };
+      }
 
       console.log('Sending update data:', updateData);
-      const response = await fetch(`http://192.168.0.106:8081/api/students/${user.id}`, {
+      const response = await fetch(apiEndpoint, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -152,7 +228,7 @@ const Profile = () => {
 
     setLoading(true);
     try {
-      const response = await fetch('http://192.168.0.106:8081/api/upload', {
+      const response = await fetch('https://projectmanagement-production-e252.up.railway.app/api/upload', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -164,7 +240,7 @@ const Profile = () => {
         const data = await response.json();
         setProfileData(prev => ({
           ...prev,
-          profileImage: data.url
+          profileImage: data.file_url || data.url
         }));
         setMessage('Image uploaded successfully');
       } else {
@@ -261,7 +337,7 @@ const Profile = () => {
                     />
                   </div>
 
-                  <div>
+                  {/* <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
                     <input
                       type="tel"
@@ -271,7 +347,7 @@ const Profile = () => {
                       disabled={!isEditing}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                     />
-                  </div>
+                  </div> */}
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Department</label>
@@ -285,29 +361,33 @@ const Profile = () => {
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Semester</label>
-                    <input
-                      type="text"
-                      name="semester"
-                      value={profileData.semester}
-                      onChange={handleInputChange}
-                      disabled={!isEditing}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
-                    />
-                  </div>
+                  {user?.type === 'student' && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Semester</label>
+                      <input
+                        type="text"
+                        name="semester"
+                        value={profileData.semester}
+                        onChange={handleInputChange}
+                        disabled={!isEditing}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      />
+                    </div>
+                  )}
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Roll Number</label>
-                    <input
-                      type="text"
-                      name="rollNumber"
-                      value={profileData.rollNumber}
-                      onChange={handleInputChange}
-                      disabled={!isEditing}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
-                    />
-                  </div>
+                  {user?.type === 'student' && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Roll Number</label>
+                      <input
+                        type="text"
+                        name="rollNumber"
+                        value={profileData.rollNumber}
+                        onChange={handleInputChange}
+                        disabled={!isEditing}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      />
+                    </div>
+                  )}
                 </div>
 
                 {isEditing && (
@@ -329,6 +409,9 @@ const Profile = () => {
                   </div>
                 )}
               </form>
+
+              {/* Submissions Section - Only for Students */}
+             
             </div>
           </div>
         </div>

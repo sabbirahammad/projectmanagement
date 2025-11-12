@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 const Notification = ({ message, type, onClose }) => {
   const bgColor = type === 'error' ? 'bg-red-100 border-red-400 text-red-700' : 'bg-green-100 border-green-400 text-green-700';
@@ -20,6 +21,7 @@ const Notification = ({ message, type, onClose }) => {
 };
 
 const StudentAuth = () => {
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -58,16 +60,14 @@ const StudentAuth = () => {
       console.log('Student Data:', data.student);
 
       if (response.ok) {
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('userType', 'student');
-        localStorage.setItem('userName', data.student.first_name);
-        localStorage.setItem('user', JSON.stringify({
+        const userData = {
           id: data.student.id,
           name: data.student.first_name,
           email: data.student.email,
-          type: 'student'
-        }));
-        console.log('Stored user data:', JSON.parse(localStorage.getItem('user')));
+          type: 'student',
+          image: data.student.image || ''
+        };
+        login(userData, data.token);
         navigate('/');
       } else {
         // Show notification for API errors

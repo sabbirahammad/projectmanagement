@@ -114,7 +114,7 @@ const Supervisor = () => {
     });
     fetchTeams();
   };
-
+console.log(supervisors)
   const handleSubmitRequest = async () => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -408,11 +408,17 @@ const Supervisor = () => {
                   onClick={() => handleSupervisorClick(supervisor)}
                 >
                   <div className="flex items-center mb-4">
-                    <img
-                      src={supervisor.image || 'https://via.placeholder.com/150'}
-                      alt={supervisor.name}
-                      className="w-12 h-12 rounded-full mr-4 object-cover"
-                    />
+                    {supervisor.image ? (
+                      <img
+                        src={supervisor.image}
+                        alt={supervisor.name}
+                        className="w-12 h-12 rounded-full mr-4 object-cover"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4">
+                        {supervisor.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                      </div>
+                    )}
                     <div>
                       <h3 className="text-xl font-semibold text-gray-800">{supervisor.name}</h3>
                       <p className="text-sm text-gray-500">{supervisor.role}</p>

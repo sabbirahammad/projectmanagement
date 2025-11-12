@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 const SupervisorAuth = () => {
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -37,15 +39,14 @@ const SupervisorAuth = () => {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('userType', 'supervisor');
-        localStorage.setItem('userName', data.supervisor.name);
-        localStorage.setItem('user', JSON.stringify({
+        const userData = {
           id: data.supervisor.id,
           name: data.supervisor.name,
           email: data.supervisor.email,
-          type: 'supervisor'
-        }));
+          type: 'supervisor',
+          image: data.supervisor.image || ''
+        };
+        login(userData, data.token);
         navigate('/');
       } else {
         setError(data.message || 'Login failed');

@@ -96,6 +96,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import ist from '../../assets/ist.png'
 
 const SiteBar = () => {
   const location = useLocation();
@@ -131,8 +132,10 @@ const SiteBar = () => {
       <div className="p-6">
         {/* Logo Section */}
         <div className="text-center mb-8">
-          <div className="w-12 h-12 mx-auto mb-3 bg-blue-600 rounded-lg flex items-center justify-center">
-            <span className="text-xl">🚀</span>
+          <div className="w-12 h-12 mx-auto mb-3  rounded-lg flex items-center justify-center">
+            <span className="text-xl">
+              <img src={ist} alt="" />
+            </span>
           </div>
           <h2 className="text-xl font-bold text-blue-400">
             ProjectFlow
@@ -165,9 +168,17 @@ const SiteBar = () => {
       {/* User Profile Section */}
       <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-700 bg-gray-800">
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-            <span className="text-xs font-bold">{user?.name?.split(' ').map(n => n[0]).join('').toUpperCase()}</span>
-          </div>
+          {user?.image ? (
+            <img
+              src={user.image}
+              alt="Profile"
+              className="w-8 h-8 rounded-full object-cover"
+            />
+          ) : (
+            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+              <span className="text-xs font-bold">{user?.name?.split(' ').map(n => n[0]).join('').toUpperCase()}</span>
+            </div>
+          )}
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium truncate">{user?.name}</p>
             <p className="text-xs text-gray-400 capitalize">{user?.type}</p>

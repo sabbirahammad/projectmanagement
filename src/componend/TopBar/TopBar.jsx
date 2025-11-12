@@ -1,29 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 const TopBar = () => {
+  const { user, logout } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [showNotifications, setShowNotifications] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userName, setUserName] = useState('');
-  const [userType, setUserType] = useState('');
   const [teamRequests, setTeamRequests] = useState([]);
   const [supervisorRequests, setSupervisorRequests] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const name = localStorage.getItem('userName');
-    const type = localStorage.getItem('userType');
-
-    if (token && name) {
+    if (user) {
       setIsLoggedIn(true);
-      setUserName(name);
-      setUserType(type);
       fetchTeamRequests();
       fetchSupervisorRequests();
+    } else {
+      setIsLoggedIn(false);
     }
-  }, []);
+  }, [user]);
 
   const fetchTeamRequests = async () => {
     const token = localStorage.getItem('token');
@@ -158,11 +154,9 @@ const TopBar = () => {
     }
   };
 
-  console.log(userName)
   const notifications = [
- 
+
   ];
-console.log(teamRequests)
   return (
     <div className="h-16 bg-white shadow-lg border-b border-gray-200 fixed top-0 left-64 right-0 z-40 backdrop-blur-md bg-white/95">
       <div className="flex items-center justify-between h-full px-6">
@@ -319,18 +313,26 @@ console.log(teamRequests)
           {isLoggedIn ? (
             <div className="flex items-center space-x-3">
               <div className="hidden md:block text-right">
-                <p className="text-sm font-medium text-gray-900">{userName}</p>
-                <p className="text-xs text-gray-500">{userType === 'student' ? 'Student' : 'Supervisor'}</p>
+                <p className="text-sm font-medium text-gray-900">{user?.name}</p>
+                <p className="text-xs text-gray-500">{user?.type === 'student' ? 'Student' : 'Supervisor'}</p>
               </div>
               <div className="relative group">
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-bold cursor-pointer hover:scale-110 transition-transform duration-200">
-                  {userName.split(' ').map(n => n[0]).join('').toUpperCase()}
-                </div>
+                {user?.image ? (
+                  <img
+                    src={user.image}
+                    alt="Profile"
+                    className="w-8 h-8 rounded-full object-cover cursor-pointer hover:scale-110 transition-transform duration-200"
+                  />
+                ) : (
+                  <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-bold cursor-pointer hover:scale-110 transition-transform duration-200">
+                    {user?.name?.split(' ').map(n => n[0]).join('').toUpperCase()}
+                  </div>
+                )}
                 {/* User Dropdown */}
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                   <div className="p-3 border-b border-gray-200">
-                    <p className="text-sm font-medium text-gray-900">{userName}</p>
-                    <p className="text-xs text-gray-500">{userType === 'student' ? 'Student' : 'Supervisor'}</p>
+                    <p className="text-sm font-medium text-gray-900">{user?.name}</p>
+                    <p className="text-xs text-gray-500">{user?.type === 'student' ? 'Student' : 'Supervisor'}</p>
                   </div>
                   <div className="py-2">
                     <Link to="/profile" className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</Link>
@@ -339,9 +341,7 @@ console.log(teamRequests)
                     <button
                       className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50"
                       onClick={() => {
-                        localStorage.removeItem('token');
-                        localStorage.removeItem('userName');
-                        localStorage.removeItem('userType');
+                        logout();
                         window.location.reload();
                       }}
                     >

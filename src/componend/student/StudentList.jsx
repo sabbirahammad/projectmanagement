@@ -55,7 +55,7 @@ const StudentList = () => {
 
         // Filter mock data based on department and session
         let mockStudents = [
-         
+
         ];
 
         if (department) {
@@ -74,10 +74,18 @@ const StudentList = () => {
         return;
       }
 
-      const data = await response.json();
-      console.log('Fetched data:', data);
-      // API returns {total: number, students: array}
-      setStudents(data.students || []);
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const data = await response.json();
+        console.log('Fetched data:', data);
+        // API returns {total: number, students: array}
+        setStudents(data.students || []);
+      } else {
+        const text = await response.text();
+        console.log('Non-JSON response:', text);
+        setError('Server returned non-JSON response: ' + text);
+        return;
+      }
     } catch (err) {
       console.log('Fetch error:', err);
       setError(err.message);
@@ -203,9 +211,17 @@ const StudentList = () => {
               {filteredStudents.map((student, index) => (
                 <div key={index} className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 border border-gray-100">
                   <div className="flex items-center mb-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4">
-                      {student.first_name[0]}{student.last_name[0]}
-                    </div>
+                    {student.image ? (
+                      <img
+                        src={student.image}
+                        alt={`${student.first_name} ${student.last_name}`}
+                        className="w-12 h-12 rounded-full object-cover mr-4"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4">
+                        {student.first_name[0]}{student.last_name[0]}
+                      </div>
+                    )}
                     <div>
                       <h3 className="text-xl font-semibold text-gray-800">{student.first_name} {student.last_name}</h3>
                       <p className="text-sm text-gray-500">{student.role}</p>

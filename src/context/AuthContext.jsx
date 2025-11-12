@@ -19,14 +19,29 @@ export const AuthProvider = ({ children }) => {
     if (token) {
       // Decode token or fetch user info
       // For simplicity, assume user info is in localStorage or decode JWT
-      const userInfo = JSON.parse(localStorage.getItem('user') || '{}');
-      
+      let userInfo = JSON.parse(localStorage.getItem('user') || '{}');
+
       console.log('AuthContext - Loaded user info:', userInfo);
       if (userInfo && Object.keys(userInfo).length > 0) {
         setUser(userInfo);
       } else {
-        // If user info is empty, try to fetch from API or set to null
-        setUser(null);
+        // Backward compatibility: if 'user' is not set, try to construct from old format
+        const userName = localStorage.getItem('userName');
+        const userType = localStorage.getItem('userType');
+        if (userName && userType) {
+          userInfo = {
+            name: userName,
+            type: userType,
+            id: null,
+            email: '',
+            image: ''
+          };
+          setUser(userInfo);
+          // Optionally, update localStorage with new format
+          localStorage.setItem('user', JSON.stringify(userInfo));
+        } else {
+          setUser(null);
+        }
       }
     } else {
       setUser(null);
